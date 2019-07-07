@@ -17,6 +17,7 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 	userID := uuid.New()
 
 	class.SetUser(userName, userID.String())
+	class.AddUserInterest(class.UserInterest{userName, interests})
 }
 
 // SignIn is
