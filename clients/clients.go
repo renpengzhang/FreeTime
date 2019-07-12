@@ -8,12 +8,12 @@ import (
 
 // SignUp is
 func SignUp(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Receiving SignUp request")
 	parameters := r.URL.Query()
 	userName := parameters.Get("username")
 	interests := parameters.Get("interests")
 
 	operations.SignUp(userName, interests)
+	fmt.Fprintf(w, "%s Signed Up interests %s", userName, interests)
 }
 
 // SignIn is
