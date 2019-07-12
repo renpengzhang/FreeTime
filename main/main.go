@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"FreeTime/operations"
+	"FreeTime/clients"
 	//"github.com/gorilla/mux"
 )
 
@@ -15,17 +15,17 @@ func main() {
 		fmt.Fprintf(w, "Hello, %s", username)
 	})
 
-	http.HandleFunc("/signup", operations.SignUp)
+	http.HandleFunc("/signup", clients.SignUp)
 
-	http.HandleFunc("/signin", operations.SignIn)
+	http.HandleFunc("/signin", clients.SignIn)
 
-	http.HandleFunc("/createevent", operations.CreateEvent)
+	http.HandleFunc("/createevent", clients.CreateEvent)
 
-	http.HandleFunc("/joinevent", operations.JoinEvent)
+	http.HandleFunc("/joinevent", clients.JoinEvent)
 
-	http.HandleFunc("/getevents", operations.GetEvents)
+	http.HandleFunc("/getevents", clients.GetEvents)
 
-	http.HandleFunc("/getuserprofile", operations.GetUserProfile)
+	http.HandleFunc("/getuserprofile", clients.GetUserProfile)
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
 
