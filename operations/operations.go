@@ -4,6 +4,7 @@ import (
 	"FreeTime/class"
 	// "fmt"
 	"github.com/google/uuid"
+	"time"
 )
 
 // SignUp is
@@ -22,8 +23,14 @@ func SignIn(userName string) {
 }
 
 // CreateEvent is
-func CreateEvent() {
+func CreateEvent(userName string, eventName string, startTime string, location string) {
+	eventID := uuid.New()
+	owner, error := class.GetUserByName(userName)
 
+	if error != nil {
+		ownerID := owner.ID
+		class.SetEvent(class.Event{eventID.String(), eventName, ownerID, time.Now(), location, 0})
+	}
 }
 
 // JoinEvent is
@@ -38,5 +45,5 @@ func GetEvents() {
 
 // GetUserProfile is
 func GetUserProfile() {
-	
+
 }

@@ -8,7 +8,8 @@ type User struct {
 
 // GetUserByName is
 func GetUserByName(userName string) (*User, error) {
-	return nil, nil
+	user := User{"TestUserID", "TestUserName"}
+	return &user, nil
 }
 
 // GetUserByID is
