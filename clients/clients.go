@@ -38,15 +38,26 @@ func CreateEvent(w http.ResponseWriter, r *http.Request) {
 
 // JoinEvent is
 func JoinEvent(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Receiving JoinEvent request")
+	parameters := r.URL.Query()
+	userName := parameters.Get("username")
+	eventID := parameters.Get("eventId")
+
+	operations.JoinEvent(userName, eventID)
+	fmt.Fprintf(w, "%s joined event %s", userName, eventID)
 }
 
 // GetEvents is
 func GetEvents(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Receiving GetEvents request")
+	userName := r.URL.Query().Get("username")
+
+	eventsList := operations.GetEvents(userName)
+	fmt.Fprintf(w, "Got %v for %s", userName, eventsList)
 }
 
 // GetUserProfile is
 func GetUserProfile(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Receiving GetUserProfile request")
+	userName := r.URL.Query().Get("username")
+
+	interests, eventsList := operations.GetUserProfile(userName)
+	fmt.Fprintf(w, "Got interests: %v\nand events: %v\nfor %s successfully", interests, eventsList, userName)
 }

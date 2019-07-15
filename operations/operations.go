@@ -64,16 +64,61 @@ func CreateEvent(userName string, eventName string, startTime string, location s
 }
 
 // JoinEvent is
-func JoinEvent() {
-
+func JoinEvent(userName string, eventID string) {
+	// class.SetUserEvent(class.UserJoinedEvent, peopleCnt)
+	fmt.Printf("%s join %s\n", userName, eventID)
 }
 
 // GetEvents is
-func GetEvents() {
+func GetEvents(userName string) []class.Event {
+	user, userError := class.GetUserByName(userName)
+	var eventsList []class.Event
 
+	if userError == nil {
+		userIDString := user.ID
+		eventsList = []class.Event {}
+		// eventList := class.GetUserEvents(userIDString)
+		
+		if (eventsList != nil) {
+			// Print successful msg to console
+			fmt.Printf("Get events for %s - %s: %v\n", user.Username, userIDString, eventsList)
+		}
+	} else {
+		fmt.Printf("There is no %s in db\n", userName)
+	}
+
+	return eventsList
 }
 
 // GetUserProfile is
-func GetUserProfile() {
+func GetUserProfile(userName string) ([]string, []class.Event) {
+	user, userError := class.GetUserByName(userName)
+	var interests []string
+	var eventsList []class.Event
 
+	if userError == nil {
+		userIDString := user.ID
+		userInterests := class.GetInterestsByUserID(userIDString)
+		interests = []string {}
+		eventsList = []class.Event {}
+		// eventList := class.GetUserEvents(userIDString)
+
+		for _, userInterest := range userInterests {
+			interests = append(interests, userInterest.Interest)
+		}
+
+		if (interests != nil) {
+			// Print successful msg to console
+			fmt.Printf("Get interests for %s - %s: %v\n", user.Username, userIDString, interests)
+		}
+
+		if (eventsList != nil) {
+			// Print successful msg to console
+			fmt.Printf("Get events for %s - %s: %v\n", user.Username, userIDString, eventsList)
+		}
+	} else {
+		fmt.Printf("There is no %s in db\n", userName)
+	}
+
+	return interests, eventsList
 }
