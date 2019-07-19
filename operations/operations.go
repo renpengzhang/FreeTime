@@ -65,8 +65,17 @@ func CreateEvent(userName string, eventName string, startTime string, location s
 
 // JoinEvent is
 func JoinEvent(userName string, eventID string) {
-	// class.SetUserEvent(class.UserJoinedEvent, peopleCnt)
-	fmt.Printf("%s join %s\n", userName, eventID)
+	user, userError := class.GetUserByName(userName)
+	if (userError == nil) {
+		joinError := class.AddUserJoinedEvent(class.UserJoinedEvent{user.ID, eventID})
+		if (joinError == nil) {
+			fmt.Printf("%s - %s join %s\n", userName, user.ID, eventID)
+		} else {
+			fmt.Printf("Join event failed\n")
+		}
+	} else {
+		fmt.Printf("There is no %s in db\n", userName)
+	}
 }
 
 // GetEvents is
