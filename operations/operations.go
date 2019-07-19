@@ -85,20 +85,7 @@ func GetEvents(userName string) []class.Event {
 
 	if userError == nil {
 		userIDString := user.ID
-		joinedEvents := class.GetUserJoinedEvents(userIDString)
-		if (joinedEvents != nil) {
-			for _, joinedEvent := range joinedEvents {
-				event, eventError := class.GetEventByID(joinedEvent.EventID)
-				if (eventError == nil) {
-					eventsList = append(eventsList, *event)
-				} else {
-					fmt.Printf("Get event error\n")
-				}
-			}
-		} else {
-			fmt.Printf("Get joined event error\n")
-		}
-		
+		eventsList = GetEventsByUserID(userIDString)
 		if (eventsList != nil) {
 			// Print successful msg to console
 			fmt.Printf("Get events for %s - %s: %v\n", user.Username, userIDString, eventsList)
@@ -119,19 +106,6 @@ func GetUserProfile(userName string) ([]string, []class.Event) {
 	if userError == nil {
 		userIDString := user.ID
 		userInterests := class.GetInterestsByUserID(userIDString)
-		joinedEvents := class.GetUserJoinedEvents(userIDString)
-		if (joinedEvents != nil) {
-			for _, joinedEvent := range joinedEvents {
-				event, eventError := class.GetEventByID(joinedEvent.EventID)
-				if (eventError == nil) {
-					eventsList = append(eventsList, *event)
-				} else {
-					fmt.Printf("Get event error\n")
-				}
-			}
-		} else {
-			fmt.Printf("Get joined event error\n")
-		}
 
 		for _, userInterest := range userInterests {
 			interests = append(interests, userInterest.Interest)
@@ -142,6 +116,7 @@ func GetUserProfile(userName string) ([]string, []class.Event) {
 			fmt.Printf("Get interests for %s - %s: %v\n", user.Username, userIDString, interests)
 		}
 
+		eventsList = GetEventsByUserID(userIDString)
 		if (eventsList != nil) {
 			// Print successful msg to console
 			fmt.Printf("Get events for %s - %s: %v\n", user.Username, userIDString, eventsList)
@@ -151,4 +126,23 @@ func GetUserProfile(userName string) ([]string, []class.Event) {
 	}
 
 	return interests, eventsList
+}
+
+func GetEventsByUserID(userID string) []class.Event {
+	var eventsList []class.Event
+	joinedEvents := class.GetUserJoinedEvents(userID)
+	if (joinedEvents != nil) {
+		for _, joinedEvent := range joinedEvents {
+			event, eventError := class.GetEventByID(joinedEvent.EventID)
+			if (eventError == nil) {
+				eventsList = append(eventsList, *event)
+			} else {
+				fmt.Printf("Get event error\n")
+			}
+		}
+	} else {
+		fmt.Printf("Get joined event error\n")
+	}
+
+	return eventsList
 }
