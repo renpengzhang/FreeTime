@@ -51,7 +51,7 @@ func GetEvents(w http.ResponseWriter, r *http.Request) {
 	userName := r.URL.Query().Get("username")
 
 	eventsList := operations.GetEvents(userName)
-	fmt.Fprintf(w, "Got %v for %s", userName, eventsList)
+	fmt.Fprintf(w, "Got %v for %s", eventsList, userName)
 }
 
 // GetUserProfile is

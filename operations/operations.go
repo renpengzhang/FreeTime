@@ -76,8 +76,19 @@ func GetEvents(userName string) []class.Event {
 
 	if userError == nil {
 		userIDString := user.ID
-		eventsList = []class.Event {}
-		// eventList := class.GetUserEvents(userIDString)
+		joinedEvents := class.GetUserJoinedEvents(userIDString)
+		if (joinedEvents != nil) {
+			for _, joinedEvent := range joinedEvents {
+				event, eventError := class.GetEventByID(joinedEvent.EventID)
+				if (eventError == nil) {
+					eventsList = append(eventsList, *event)
+				} else {
+					fmt.Printf("Get event error\n")
+				}
+			}
+		} else {
+			fmt.Printf("Get joined event error\n")
+		}
 		
 		if (eventsList != nil) {
 			// Print successful msg to console
@@ -99,8 +110,6 @@ func GetUserProfile(userName string) ([]string, []class.Event) {
 	if userError == nil {
 		userIDString := user.ID
 		userInterests := class.GetInterestsByUserID(userIDString)
-		interests = []string {}
-		eventsList = []class.Event {}
 		// eventList := class.GetUserEvents(userIDString)
 
 		for _, userInterest := range userInterests {

@@ -14,7 +14,8 @@ type Event struct {
 
 // GetEventByID is
 func GetEventByID(eventID string) (*Event, error) {
-	return nil, nil
+	event := Event{eventID, "TestEventName", "TestOwnerID", time.Now(), "TestLocation", 1}
+	return &event, nil
 }
 
 // GetEventByName is
