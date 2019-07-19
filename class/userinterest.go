@@ -8,7 +8,7 @@ type UserInterest struct {
 
 // GetInterestsByUserID is
 func GetInterestsByUserID(userID string) []UserInterest {
-	return nil
+	return []UserInterest{UserInterest{"TestInterest", userID}}
 }
 
 // AddUserInterest is
