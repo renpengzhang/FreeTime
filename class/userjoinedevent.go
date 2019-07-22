@@ -8,7 +8,7 @@ type UserJoinedEvent struct {
 
 // GetUserJoinedEvent is
 func GetUserJoinedEvents(userID string) []UserJoinedEvent {
-	return []UserJoinedEvent{UserJoinedEvent{userID, "TestEventID"}}
+	return []UserJoinedEvent{UserJoinedEvent{userID, "TestEventID1"}, UserJoinedEvent{userID, "TestEventID2"}}
 }
 
 // AddUserJoinedEvent is

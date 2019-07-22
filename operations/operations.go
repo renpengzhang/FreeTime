@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"time"
+	"encoding/json"
 )
 
 // SignUp is
@@ -145,4 +146,16 @@ func GetEventsByUserID(userID string) []class.Event {
 	}
 
 	return eventsList
+}
+
+func WrapProfileJson(interests []string, events []class.Event) ([]byte, error) {
+    type Profile struct {
+		Interests  []string
+		Events []class.Event
+	}
+
+	profile := Profile{interests, events}
+	js, err := json.Marshal(profile)
+
+	return js, err
 }

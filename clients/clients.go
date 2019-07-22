@@ -4,6 +4,7 @@ import (
 	"FreeTime/operations"
 	"fmt"
 	"net/http"
+	"encoding/json"
 )
 
 // SignUp is
@@ -51,7 +52,16 @@ func GetEvents(w http.ResponseWriter, r *http.Request) {
 	userName := r.URL.Query().Get("username")
 
 	eventsList := operations.GetEvents(userName)
-	fmt.Fprintf(w, "Got %v for %s", eventsList, userName)
+	fmt.Fprintf(w, "Got events for %s:\n", userName)
+
+	w.Header().Set("Content-Type", "application/json")
+
+	js, err := json.Marshal(eventsList)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Write(js)
 }
 
 // GetUserProfile is
@@ -59,5 +69,14 @@ func GetUserProfile(w http.ResponseWriter, r *http.Request) {
 	userName := r.URL.Query().Get("username")
 
 	interests, eventsList := operations.GetUserProfile(userName)
-	fmt.Fprintf(w, "Got interests: %v\nand events: %v\nfor %s successfully", interests, eventsList, userName)
+	fmt.Fprintf(w, "Got profile for %s:\n", userName)
+
+	w.Header().Set("Content-Type", "application/json")
+
+	js, err := operations.WrapProfileJson(interests, eventsList)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Write(js)
 }
