@@ -32,9 +32,10 @@ func CreateEvent(w http.ResponseWriter, r *http.Request) {
 	eventName := parameters.Get("name")
 	startTime := parameters.Get("startTime")
 	location := parameters.Get("location")
+	interests := parameters.Get("interests")
 
-	operations.CreateEvent(userName, eventName, startTime, location)
-	fmt.Fprintf(w, "%s created event %s at %s in %s", userName, eventName, startTime, location)
+	operations.CreateEvent(userName, eventName, startTime, location, interests)
+	fmt.Fprintf(w, "%s created event %s with interest tag %s at %s in %s", userName, eventName, interests, startTime, location)
 }
 
 // JoinEvent is

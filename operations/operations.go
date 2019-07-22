@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"time"
 	"encoding/json"
+	"strings"
 )
 
 // SignUp is
@@ -41,7 +42,7 @@ func SignIn(userName string) {
 }
 
 // CreateEvent is
-func CreateEvent(userName string, eventName string, startTime string, location string) {
+func CreateEvent(userName string, eventName string, startTime string, location string, interests string) {
 	eventID := uuid.New()
 	eventIDString := eventID.String()
 	owner, userError := class.GetUserByName(userName)
@@ -59,6 +60,16 @@ func CreateEvent(userName string, eventName string, startTime string, location s
 		} else {
 			fmt.Printf("Set event failed\n")
 		}
+
+		for _, interest := range strings.Split(interests, ",") {
+			eventInterest := class.EventInterest{eventIDString, interest}
+			if class.AddEventInterest(eventInterest) == nil {
+				fmt.Printf("Add with Interest: %s\n", interest)
+			} else {
+				fmt.Printf("Add event with interest failed\n")
+			}
+		}
+
 	} else {
 		fmt.Printf("There is no %s in db\n", userName)
 	}
