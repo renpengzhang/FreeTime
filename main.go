@@ -38,10 +38,11 @@ func main() {
 
 	http.HandleFunc("/joinevent", clients.JoinEvent)
 
-	http.HandleFunc("/getevents", clients.GetEvents)
+	http.HandleFunc("/getjoinedevents", clients.GetJoinedEvents)
+
+	http.HandleFunc("/getallevents", clients.GetAllEvents)
 
 	http.HandleFunc("/getuserprofile", clients.GetUserProfile)
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
-
 }

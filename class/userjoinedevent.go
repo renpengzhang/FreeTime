@@ -9,16 +9,19 @@ type UserJoinedEvent struct {
 }
 
 // GetUserJoinedEvent is
-func GetUserJoinedEvents(userID string) []UserJoinedEvent {
+func GetUserJoinedEvents(userID string) ([]UserJoinedEvent, error) {
 	db := database.GetAzureMysqlDB()
 
 	var userJoinedEventList []UserJoinedEvent
 
-	dbUserEventsList, _ := db.GetUserJoinedEvents(userID)
+	dbUserEventsList, err := db.GetUserJoinedEvents(userID)
+	if err != nil {
+		return nil, err
+	}
 	for _, dbUserEvent := range dbUserEventsList {
 		userJoinedEventList = append(userJoinedEventList, UserJoinedEvent{dbUserEvent.UserID, dbUserEvent.EventID})
 	}
-	return userJoinedEventList
+	return userJoinedEventList, nil
 }
 
 // AddUserJoinedEvent is

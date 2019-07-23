@@ -29,4 +29,6 @@ type DatabaseInterface interface {
 	GetUserJoinedEvents(userID string) ([]DBUserJoinedEvent, error)
 
 	AddUserJoinedEvent(userJoinedEvent DBUserJoinedEvent) error
+
+	GetAllEvent() ([]*DBEvent, error)
 }

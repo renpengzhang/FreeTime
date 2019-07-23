@@ -1,8 +1,8 @@
 package clients
 
 import (
-	"FreeTime/operations"
 	"FreeTime/commons"
+	"FreeTime/operations"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -131,15 +131,15 @@ func JoinEvent(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// GetEvents is
-func GetEvents(w http.ResponseWriter, r *http.Request) {
+// GetJoinedEvents is
+func GetJoinedEvents(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		http.Error(w, "Method not allowed", 405)
 		return
 	}
 	userName := r.URL.Query().Get("username")
 
-	eventsList, err := operations.GetEvents(userName)
+	eventsList, err := operations.GetJoinedEvents(userName)
 	if err != nil {
 		errMsg := fmt.Sprintf("Failed to get events for %s", userName)
 		if err.Error() == commons.UserNotExist {
@@ -147,6 +147,29 @@ func GetEvents(w http.ResponseWriter, r *http.Request) {
 		} else {
 			http.Error(w, errMsg, http.StatusInternalServerError)
 		}
+	} else {
+		js, err := json.Marshal(eventsList)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write(js)
+	}
+}
+
+// GetAllEvents is
+func GetAllEvents(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		http.Error(w, "Method not allowed", 405)
+		return
+	}
+
+	eventsList, err := operations.GetAllEvents()
+	if err != nil {
+		errMsg := fmt.Sprintf("Failed to get all events")
+		http.Error(w, errMsg, http.StatusInternalServerError)
 	} else {
 		js, err := json.Marshal(eventsList)
 		if err != nil {

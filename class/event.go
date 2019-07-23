@@ -13,7 +13,23 @@ type Event struct {
 	StartTime        time.Time
 	Location         string
 	ParticipantCount int
-	Description	     string
+	Description      string
+}
+
+func GetAllEvents() ([]*Event, error) {
+	db := database.GetAzureMysqlDB()
+	dbeventlist, err := db.GetAllEvent()
+	if err != nil {
+		return nil, err
+	}
+
+	var eventlist []*Event
+	for _, dbevent := range dbeventlist {
+		event := Event{dbevent.EventID, dbevent.Name, dbevent.OwnerID, dbevent.StartTime, dbevent.Location, dbevent.ParticipantCount, dbevent.Description}
+		eventlist = append(eventlist, &event)
+	}
+
+	return eventlist, nil
 }
 
 // GetEventByID is

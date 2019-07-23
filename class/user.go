@@ -45,7 +45,7 @@ func JoinEvent(userID string, eventID string) error {
 }
 
 // GetEventsByUserID is
-func GetEventsByUserID(userID string) ([]*Event, error) {
+func GetCreatedEventsByUserID(userID string) ([]*Event, error) {
 	db := database.GetAzureMysqlDB()
 	dbEventList, err := db.GetEventsByUserID(userID)
 	if err != nil {

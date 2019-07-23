@@ -68,7 +68,7 @@ func CreateEvent(userName string, eventName string, startTime string, location s
 	if userError == nil {
 		ownerID := owner.ID
 		eventTime, timeError := time.Parse("2006-01-02 15:04:05", startTime)
-		eventErr := class.SetEvent(class.Event{eventIDString, eventName, ownerID, eventTime, location, 1, description}) 
+		eventErr := class.SetEvent(class.Event{eventIDString, eventName, ownerID, eventTime, location, 1, description})
 		if timeError == nil && eventErr == nil {
 			// Print successful msg to console
 			fmt.Printf("Event: %s - %s, Time: %s, \n", eventName, eventIDString, eventTime)
@@ -140,15 +140,56 @@ func JoinEvent(userName string, eventID string) error {
 	return nil
 }
 
-// GetEvents is
-func GetEvents(userName string) ([]*class.Event, error) {
+// GetJoinedEvents is
+func GetJoinedEvents(userName string) ([]*class.Event, error) {
+	user, userError := class.GetUserByName(userName)
+	var eventsList []*class.Event
+
+	if userError == nil {
+		userIDString := user.ID
+		joinedEvents, err := class.GetUserJoinedEvents(userIDString)
+		if err != nil {
+			return nil, err
+		}
+
+		if joinedEvents != nil {
+			// Print successful msg to console
+			fmt.Printf("Get events for %s - %s: %v\n", user.Username, userIDString, joinedEvents)
+			for _, joinedEvent := range joinedEvents {
+				event, eventErr := class.GetEventByID(joinedEvent.EventID)
+				if eventErr == nil {
+					eventsList = append(eventsList, event)
+				} else {
+					fmt.Printf("Get event by id failed\n")
+					fmt.Println(eventErr)
+					return nil, eventErr
+				}
+			}
+		} else {
+			fmt.Printf("There is no events for user %s\n", userName)
+		}
+	} else {
+		fmt.Printf("Get user %s failed\n", userName)
+		fmt.Println(userError)
+		return nil, userError
+	}
+
+	return eventsList, nil
+}
+
+func GetAllEvents() ([]*class.Event, error) {
+	return class.GetAllEvents()
+}
+
+// GetCreatedEvents is
+func GetCreatedEvents(userName string) ([]*class.Event, error) {
 	user, userError := class.GetUserByName(userName)
 	var eventsList []*class.Event
 	var eventErr error
 
 	if userError == nil {
 		userIDString := user.ID
-		eventsList, eventErr = class.GetEventsByUserID(userIDString)
+		eventsList, eventErr = class.GetCreatedEventsByUserID(userIDString)
 		if eventErr == nil {
 			// Print successful msg to console
 			if eventsList == nil {
@@ -174,8 +215,7 @@ func GetEvents(userName string) ([]*class.Event, error) {
 func GetUserProfile(userName string) ([]string, []*class.Event, error) {
 	user, userError := class.GetUserByName(userName)
 	var interests []string
-	var eventsList []*class.Event
-	var joinedEvents []class.UserJoinedEvent
+	var createdEvents []*class.Event
 
 	if userError == nil {
 		userIDString := user.ID
@@ -190,20 +230,15 @@ func GetUserProfile(userName string) ([]string, []*class.Event, error) {
 			fmt.Printf("Get interests for %s - %s: %v\n", user.Username, userIDString, interests)
 		}
 
-		joinedEvents = class.GetUserJoinedEvents(userIDString)
-		if joinedEvents != nil {
+		var err error
+		createdEvents, err = class.GetCreatedEventsByUserID(userIDString)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		if createdEvents != nil {
 			// Print successful msg to console
-			fmt.Printf("Get events for %s - %s: %v\n", user.Username, userIDString, joinedEvents)
-			for _, joinedEvent := range joinedEvents {
-				event, eventErr := class.GetEventByID(joinedEvent.EventID)
-				if eventErr == nil {
-					eventsList = append(eventsList, event)
-				} else {
-					fmt.Printf("Get event by id failed\n")
-					fmt.Println(eventErr)
-					return nil, nil, eventErr
-				}
-			}
+			fmt.Printf("Get created events for %s - %s: %v\n", user.Username, userIDString, createdEvents)
 		} else {
 			fmt.Printf("There is no events for user %s\n", userName)
 		}
@@ -213,7 +248,7 @@ func GetUserProfile(userName string) ([]string, []*class.Event, error) {
 		return nil, nil, userError
 	}
 
-	return interests, eventsList, nil
+	return interests, createdEvents, nil
 }
 
 func WrapProfileJson(interests []string, events []*class.Event) ([]byte, error) {
