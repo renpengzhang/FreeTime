@@ -24,9 +24,11 @@ func SignUp(userName string, interests string) error {
 	fmt.Printf("Set UserID: %s to %s successfully\n", userIDString, userName)
 
 	// Need to iterate throught interests and set UserInterest by each
-	if err := class.AddUserInterest(class.UserInterest{userName, interests}); err != nil {
-		fmt.Printf("Add Interests failed\n")
-		return err
+	for _, interest := range strings.Split(interests, ",") {
+		if err := class.AddUserInterest(class.UserInterest{userIDString, interest}); err != nil {
+			fmt.Printf("Add Interests failed\n")
+			return err
+		}
 	}
 
 	// Print successful msg to console
@@ -62,6 +64,10 @@ func CreateEvent(userName string, eventName string, startTime string, location s
 			// Print successful msg to console
 			fmt.Printf("Event: %s - %s, Time: %s, \n", eventName, eventIDString, eventTime)
 			fmt.Printf("UserID: %s, Location: %s, PeopleCount: 1\n", ownerID, location)
+			joinedErr := class.AddUserJoinedEvent(class.UserJoinedEvent{ownerID, eventIDString})
+			if joinedErr != nil {
+				fmt.Printf("Join event failed\n")
+			}
 		} else if timeError == nil {
 			fmt.Printf("Time parse error\n")
 		} else {
@@ -89,6 +95,13 @@ func JoinEvent(userName string, eventID string) {
 		joinError := class.AddUserJoinedEvent(class.UserJoinedEvent{user.ID, eventID})
 		if joinError == nil {
 			fmt.Printf("%s - %s join %s\n", userName, user.ID, eventID)
+			event, eventErr := class.GetEventByID(eventID)
+			if eventErr == nil {
+				event.ParticipantCount = event.ParticipantCount + 1
+				class.SetEvent(*event)
+			} else {
+				fmt.Printf("Get event failed\n")
+			}
 		} else {
 			fmt.Printf("Join event failed\n")
 		}
@@ -122,7 +135,7 @@ func GetUserProfile(userName string) ([]string, []*class.Event) {
 	user, userError := class.GetUserByName(userName)
 	var interests []string
 	var eventsList []*class.Event
-	var eventErr error
+	var joinedEvents []class.UserJoinedEvent
 
 	if userError == nil {
 		userIDString := user.ID
@@ -137,10 +150,18 @@ func GetUserProfile(userName string) ([]string, []*class.Event) {
 			fmt.Printf("Get interests for %s - %s: %v\n", user.Username, userIDString, interests)
 		}
 
-		eventsList, eventErr = class.GetEventsByUserID(userIDString)
-		if eventsList != nil && eventErr == nil {
+		joinedEvents = class.GetUserJoinedEvents(userIDString)
+		if joinedEvents != nil {
 			// Print successful msg to console
-			fmt.Printf("Get events for %s - %s: %v\n", user.Username, userIDString, eventsList)
+			fmt.Printf("Get events for %s - %s: %v\n", user.Username, userIDString, joinedEvents)
+			for _, joinedEvent := range joinedEvents {
+				event, eventErr := class.GetEventByID(joinedEvent.EventID)
+				if eventErr == nil {
+					eventsList = append(eventsList, event)
+				} else {
+					fmt.Printf("Get event by id failed")
+				}
+			}
 		}
 	} else {
 		fmt.Printf("There is no %s in db\n", userName)

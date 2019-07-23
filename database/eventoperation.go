@@ -77,6 +77,7 @@ func (azureMysqlDB AzureMysqlDB) GetEventByName(eventName string) (*DBEvent, err
 }
 
 func (azureMysqlDB AzureMysqlDB) SetEvent(event DBEvent) error {
+	// Need to Update
 	queryString := fmt.Sprintf("INSERT into event (eventid, name, ownerid, starttime, location, participantCount) values ('%s', '%s', '%s', NOW(), '%s', %d);", event.EventID, event.Name, event.OwnerID, event.Location, event.ParticipantCount)
 
 	rows, err := azureMysqlDB.execQuery(queryString)
