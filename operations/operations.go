@@ -60,7 +60,9 @@ func CreateEvent(userName string, eventName string, startTime string, location s
 		ownerID := owner.ID
 		eventTime, timeError := time.Parse("2006-01-02 15:04:05", startTime)
 
-		if timeError == nil && class.SetEvent(class.Event{eventIDString, eventName, ownerID, eventTime, location, 1}) == nil {
+		description := "test"
+
+		if timeError == nil && class.SetEvent(class.Event{eventIDString, eventName, ownerID, eventTime, location, 1, description}) == nil {
 			// Print successful msg to console
 			fmt.Printf("Event: %s - %s, Time: %s, \n", eventName, eventIDString, eventTime)
 			fmt.Printf("UserID: %s, Location: %s, PeopleCount: 1\n", ownerID, location)
@@ -159,7 +161,7 @@ func GetUserProfile(userName string) ([]string, []*class.Event) {
 				if eventErr == nil {
 					eventsList = append(eventsList, event)
 				} else {
-					fmt.Printf("Get event by id failed")
+					fmt.Printf("Get event by id failed\n")
 				}
 			}
 		}

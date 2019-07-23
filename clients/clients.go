@@ -39,6 +39,7 @@ func CreateEvent(w http.ResponseWriter, r *http.Request) {
 	startTime := parameters.Get("startTime")
 	location := parameters.Get("location")
 	interests := parameters.Get("interests")
+	// description
 
 	operations.CreateEvent(userName, eventName, startTime, location, interests)
 	fmt.Fprintf(w, "%s created event %s with interest tag %s at %s in %s", userName, eventName, interests, startTime, location)
