@@ -6,11 +6,12 @@ type SignupBody struct {
 }
 
 type CreatEventBody struct {
-	username  string
-	name      string
-	startTime string
-	location  string
-	interests string
+	username  	string
+	name      	string
+	startTime 	string
+	location  	string
+	interests 	string
+	description string
 }
 
 type JoinEventBody struct {
