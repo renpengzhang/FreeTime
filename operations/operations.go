@@ -23,6 +23,7 @@ func SignUp(userName string, interests string) error {
 	userIDString := userID.String()
 	if err := class.SetUser(userName, userIDString); err != nil {
 		fmt.Printf("Set User failed\n")
+		fmt.Println(err)
 		return err
 	}
 
@@ -33,6 +34,7 @@ func SignUp(userName string, interests string) error {
 	for _, interest := range strings.Split(interests, ",") {
 		if err := class.AddUserInterest(class.UserInterest{userIDString, interest}); err != nil {
 			fmt.Printf("Add Interests failed\n")
+			fmt.Println(err)
 			return err
 		}
 	}
@@ -52,6 +54,7 @@ func SignIn(userName string) error {
 		return nil
 	} else {
 		fmt.Printf("%s sign in failed\n", userName)
+		fmt.Println(userError)
 		return userError
 	}
 }
@@ -73,13 +76,16 @@ func CreateEvent(userName string, eventName string, startTime string, location s
 			joinedErr := class.AddUserJoinedEvent(class.UserJoinedEvent{ownerID, eventIDString})
 			if joinedErr != nil {
 				fmt.Printf("Join event failed\n")
+				fmt.Println(joinedErr)
 				return joinedErr
 			}
 		} else if timeError == nil {
 			fmt.Printf("Time parse error\n")
+			fmt.Println(timeError)
 			return timeError
 		} else {
 			fmt.Printf("Set event failed\n")
+			fmt.Println(eventErr)
 			return eventErr
 		}
 
@@ -90,12 +96,14 @@ func CreateEvent(userName string, eventName string, startTime string, location s
 				fmt.Printf("Add with Interest: %s\n", interest)
 			} else {
 				fmt.Printf("Add event with interest failed\n")
+				fmt.Println(eventErr)
 				return eventErr
 			}
 		}
 
 	} else {
 		fmt.Printf("Get user %s failed\n", userName)
+		fmt.Println(userError)
 		return userError
 	}
 
@@ -115,14 +123,17 @@ func JoinEvent(userName string, eventID string) error {
 				class.SetEvent(*event)
 			} else {
 				fmt.Printf("Get event failed\n")
+				fmt.Println(eventErr)
 				return eventErr
 			}
 		} else {
 			fmt.Printf("Join event failed\n")
+			fmt.Println(joinError)
 			return joinError
 		}
 	} else {
 		fmt.Printf("Get user %s failed\n", userName)
+		fmt.Println(userError)
 		return userError
 	}
 
@@ -147,10 +158,12 @@ func GetEvents(userName string) ([]*class.Event, error) {
 			}
 		} else {
 			fmt.Printf("Get events for %s failed\n", user.Username)
+			fmt.Println(eventErr)
 			return nil, eventErr
 		}
 	} else {
 		fmt.Printf("Get user %s failed\n", userName)
+		fmt.Println(userError)
 		return nil, userError
 	}
 
@@ -187,6 +200,7 @@ func GetUserProfile(userName string) ([]string, []*class.Event, error) {
 					eventsList = append(eventsList, event)
 				} else {
 					fmt.Printf("Get event by id failed\n")
+					fmt.Println(eventErr)
 					return nil, nil, eventErr
 				}
 			}
@@ -195,6 +209,7 @@ func GetUserProfile(userName string) ([]string, []*class.Event, error) {
 		}
 	} else {
 		fmt.Printf("Get user %s failed\n", userName)
+		fmt.Println(userError)
 		return nil, nil, userError
 	}
 
