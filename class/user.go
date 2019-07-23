@@ -53,7 +53,7 @@ func GetEventsByUserID(userID string) ([]*Event, error) {
 	}
 	var eventList []*Event
 	for _, dbevent := range dbEventList {
-		event := Event{dbevent.EventID, dbevent.Name, dbevent.OwnerID, dbevent.StartTime, dbevent.Location, dbevent.ParticipantCount}
+		event := Event{dbevent.EventID, dbevent.Name, dbevent.OwnerID, dbevent.StartTime, dbevent.Location, dbevent.ParticipantCount, dbevent.Description}
 		eventList = append(eventList, &event)
 	}
 	return eventList, nil

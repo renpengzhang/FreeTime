@@ -13,6 +13,7 @@ type Event struct {
 	StartTime        time.Time
 	Location         string
 	ParticipantCount int
+	Description	     string
 }
 
 // GetEventByID is
@@ -22,7 +23,7 @@ func GetEventByID(eventID string) (*Event, error) {
 	if err != nil {
 		return nil, err
 	}
-	event := Event{dbevent.EventID, dbevent.Name, dbevent.OwnerID, dbevent.StartTime, dbevent.Location, dbevent.ParticipantCount}
+	event := Event{dbevent.EventID, dbevent.Name, dbevent.OwnerID, dbevent.StartTime, dbevent.Location, dbevent.ParticipantCount, dbevent.Description}
 	return &event, nil
 }
 
@@ -33,13 +34,13 @@ func GetEventByName(eventName string) (*Event, error) {
 	if err != nil {
 		return nil, err
 	}
-	event := Event{dbevent.EventID, dbevent.Name, dbevent.OwnerID, dbevent.StartTime, dbevent.Location, dbevent.ParticipantCount}
+	event := Event{dbevent.EventID, dbevent.Name, dbevent.OwnerID, dbevent.StartTime, dbevent.Location, dbevent.ParticipantCount, dbevent.Description}
 	return &event, nil
 }
 
 // SetEvent is
 func SetEvent(event Event) error {
 	db := database.GetAzureMysqlDB()
-	dbevent := database.DBEvent{event.EventID, event.Name, event.OwnerID, event.StartTime, event.Location, event.ParticipantCount}
+	dbevent := database.DBEvent{event.EventID, event.Name, event.OwnerID, event.StartTime, event.Location, event.ParticipantCount, event.Description}
 	return db.SetEvent(dbevent)
 }
