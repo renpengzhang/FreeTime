@@ -1,5 +1,7 @@
 package class
 
+import "FreeTime/database"
+
 // UserJoinedEvent is
 type UserJoinedEvent struct {
 	UserID  string
@@ -8,10 +10,22 @@ type UserJoinedEvent struct {
 
 // GetUserJoinedEvent is
 func GetUserJoinedEvents(userID string) []UserJoinedEvent {
-	return []UserJoinedEvent{UserJoinedEvent{userID, "TestEventID"}}
+	db := database.GetAzureMysqlDB()
+
+	var userJoinedEventList []UserJoinedEvent
+
+	dbUserEventsList, _ := db.GetUserJoinedEvents(userID)
+	for _, dbUserEvent := range dbUserEventsList {
+		userJoinedEventList = append(userJoinedEventList, UserJoinedEvent{dbUserEvent.UserID, dbUserEvent.EventID})
+	}
+	return userJoinedEventList
 }
 
 // AddUserJoinedEvent is
 func AddUserJoinedEvent(userJoinedEvent UserJoinedEvent) error {
-	return nil
+	db := database.GetAzureMysqlDB()
+
+	dbUserEvent := dabase.DBUserJoinedEvent{userJoinedEvent.UserID, userJoinedEvent.EventID}
+
+	return db.AddUserJoinedEvent(dbUserEvent)
 }

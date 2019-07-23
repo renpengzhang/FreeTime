@@ -1,6 +1,9 @@
 package class
 
-import "time"
+import (
+	"FreeTime/database"
+	"time"
+)
 
 // Event is
 type Event struct {
@@ -14,16 +17,29 @@ type Event struct {
 
 // GetEventByID is
 func GetEventByID(eventID string) (*Event, error) {
-	event := Event{eventID, "TestEventName", "TestOwnerID", time.Now(), "TestLocation", 1}
+	db := database.GetAzureMysqlDB()
+	dbevent, err := db.GetEventByID(userName)
+	if err != nil {
+		return nil, err
+	}
+	event := Event{dbevent.EventID, dbevent.Name, dbevent.OwnerID, dbevent.StartTime, dbevent.Location, dbevent.ParticipantCount}
 	return &event, nil
 }
 
 // GetEventByName is
 func GetEventByName(eventName string) (*Event, error) {
-	return nil, nil
+	db := database.GetAzureMysqlDB()
+	dbevent, err := db.GetEventByName(userName)
+	if err != nil {
+		return nil, err
+	}
+	event := Event{dbevent.EventID, dbevent.Name, dbevent.OwnerID, dbevent.StartTime, dbevent.Location, dbevent.ParticipantCount}
+	return &event, nil
 }
 
 // SetEvent is
 func SetEvent(event Event) error {
-	return nil
+	db := database.GetAzureMysqlDB()
+	dbevent := database.DBEvent{event.EventID, event.Name, event.OwnerID, event.StartTime, event.Location, event.ParticipantCount}
+	return db.SetEvent(dbevent)
 }

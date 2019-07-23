@@ -12,16 +12,22 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 	userName := parameters.Get("username")
 	interests := parameters.Get("interests")
 
-	operations.SignUp(userName, interests)
-	fmt.Fprintf(w, "%s signed up interests %s", userName, interests)
+	if err := operations.SignUp(userName, interests); err != nil {
+		fmt.Fprintf(w, "%s failed to sign up with interests %s", userName, interests)
+	} else {
+		fmt.Fprintf(w, "%s succeeded to sign up with interests %s", userName, interests)
+	}
 }
 
 // SignIn is
 func SignIn(w http.ResponseWriter, r *http.Request) {
 	userName := r.URL.Query().Get("username")
 
-	operations.SignIn(userName)
-	fmt.Fprintf(w, "%s signed in", userName)
+	if err := operations.SignIn(userName); err != nil {
+		fmt.Fprintf(w, "%s failed to sign in", userName)
+	} else {
+		fmt.Fprintf(w, "%s succeeded to sign in", userName)
+	}
 }
 
 // CreateEvent is
