@@ -25,7 +25,7 @@ func GetInterestsByEventID(eventID string) []EventInterest {
 func AddEventInterest(eventInterest EventInterest) error {
 	db := database.GetAzureMysqlDB()
 
-	dbEventInterest := dabase.DBEventInterest{eventInterest.EventID, eventInterest.Interest}
+	dbEventInterest := database.DBEventInterest{eventInterest.EventID, eventInterest.Interest}
 
 	return db.AddEventInterest(dbEventInterest)
 }

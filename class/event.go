@@ -18,7 +18,7 @@ type Event struct {
 // GetEventByID is
 func GetEventByID(eventID string) (*Event, error) {
 	db := database.GetAzureMysqlDB()
-	dbevent, err := db.GetEventByID(userName)
+	dbevent, err := db.GetEventByID(eventID)
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +29,7 @@ func GetEventByID(eventID string) (*Event, error) {
 // GetEventByName is
 func GetEventByName(eventName string) (*Event, error) {
 	db := database.GetAzureMysqlDB()
-	dbevent, err := db.GetEventByName(userName)
+	dbevent, err := db.GetEventByName(eventName)
 	if err != nil {
 		return nil, err
 	}

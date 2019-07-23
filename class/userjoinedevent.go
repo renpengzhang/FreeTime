@@ -25,7 +25,7 @@ func GetUserJoinedEvents(userID string) []UserJoinedEvent {
 func AddUserJoinedEvent(userJoinedEvent UserJoinedEvent) error {
 	db := database.GetAzureMysqlDB()
 
-	dbUserEvent := dabase.DBUserJoinedEvent{userJoinedEvent.UserID, userJoinedEvent.EventID}
+	dbUserEvent := database.DBUserJoinedEvent{userJoinedEvent.UserID, userJoinedEvent.EventID}
 
 	return db.AddUserJoinedEvent(dbUserEvent)
 }

@@ -4,6 +4,7 @@ import (
 	"FreeTime/operations"
 	"fmt"
 	"net/http"
+	"encoding/json"
 )
 
 // SignUp is
@@ -37,9 +38,10 @@ func CreateEvent(w http.ResponseWriter, r *http.Request) {
 	eventName := parameters.Get("name")
 	startTime := parameters.Get("startTime")
 	location := parameters.Get("location")
+	interests := parameters.Get("interests")
 
-	operations.CreateEvent(userName, eventName, startTime, location)
-	fmt.Fprintf(w, "%s created event %s at %s in %s", userName, eventName, startTime, location)
+	operations.CreateEvent(userName, eventName, startTime, location, interests)
+	fmt.Fprintf(w, "%s created event %s with interest tag %s at %s in %s", userName, eventName, interests, startTime, location)
 }
 
 // JoinEvent is
@@ -57,7 +59,16 @@ func GetEvents(w http.ResponseWriter, r *http.Request) {
 	userName := r.URL.Query().Get("username")
 
 	eventsList := operations.GetEvents(userName)
-	fmt.Fprintf(w, "Got %v for %s", eventsList, userName)
+	fmt.Fprintf(w, "Got events for %s:\n", userName)
+
+	w.Header().Set("Content-Type", "application/json")
+
+	js, err := json.Marshal(eventsList)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Write(js)
 }
 
 // GetUserProfile is
@@ -65,5 +76,14 @@ func GetUserProfile(w http.ResponseWriter, r *http.Request) {
 	userName := r.URL.Query().Get("username")
 
 	interests, eventsList := operations.GetUserProfile(userName)
-	fmt.Fprintf(w, "Got interests: %v\nand events: %v\nfor %s successfully", interests, eventsList, userName)
+	fmt.Fprintf(w, "Got profile for %s:\n", userName)
+
+	w.Header().Set("Content-Type", "application/json")
+
+	js, err := operations.WrapProfileJson(interests, eventsList)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Write(js)
 }

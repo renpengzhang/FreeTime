@@ -16,7 +16,7 @@ func GetInterestsByUserID(userID string) []UserInterest {
 
 	dbUserInterestList, _ := db.GetInterestsByUserID(userID)
 	for _, dbUserInterest := range dbUserInterestList {
-		userInterestList = append(userInterestList, UserInterest{dbUserInterestList.UserID, dbUserInterestList.Interest})
+		userInterestList = append(userInterestList, UserInterest{dbUserInterest.UserID, dbUserInterest.Interest})
 	}
 	return userInterestList
 }
@@ -25,7 +25,7 @@ func GetInterestsByUserID(userID string) []UserInterest {
 func AddUserInterest(userInterest UserInterest) error {
 	db := database.GetAzureMysqlDB()
 
-	dbUserInterest := dabase.DBUserInterest{userInterest.UserID, userInterest.Interest}
+	dbUserInterest := database.DBUserInterest{userInterest.UserID, userInterest.Interest}
 
 	return db.AddUserInterest(dbUserInterest)
 }

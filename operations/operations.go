@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"time"
 
+	"encoding/json"
+	"strings"
+
 	"github.com/google/uuid"
 )
 
@@ -46,7 +49,7 @@ func SignIn(userName string) error {
 }
 
 // CreateEvent is
-func CreateEvent(userName string, eventName string, startTime string, location string) {
+func CreateEvent(userName string, eventName string, startTime string, location string, interests string) {
 	eventID := uuid.New()
 	eventIDString := eventID.String()
 	owner, userError := class.GetUserByName(userName)
@@ -64,6 +67,16 @@ func CreateEvent(userName string, eventName string, startTime string, location s
 		} else {
 			fmt.Printf("Set event failed\n")
 		}
+
+		for _, interest := range strings.Split(interests, ",") {
+			eventInterest := class.EventInterest{eventIDString, interest}
+			if class.AddEventInterest(eventInterest) == nil {
+				fmt.Printf("Add with Interest: %s\n", interest)
+			} else {
+				fmt.Printf("Add event with interest failed\n")
+			}
+		}
+
 	} else {
 		fmt.Printf("There is no %s in db\n", userName)
 	}
@@ -88,11 +101,12 @@ func JoinEvent(userName string, eventID string) {
 func GetEvents(userName string) []*class.Event {
 	user, userError := class.GetUserByName(userName)
 	var eventsList []*class.Event
+	var eventErr error
 
 	if userError == nil {
 		userIDString := user.ID
-		eventsList = GetEventsByUserID(userIDString)
-		if eventsList != nil {
+		eventsList, eventErr = class.GetEventsByUserID(userIDString)
+		if eventsList != nil && eventErr == nil {
 			// Print successful msg to console
 			fmt.Printf("Get events for %s - %s: %v\n", user.Username, userIDString, eventsList)
 		}
@@ -108,6 +122,7 @@ func GetUserProfile(userName string) ([]string, []*class.Event) {
 	user, userError := class.GetUserByName(userName)
 	var interests []string
 	var eventsList []*class.Event
+	var eventErr error
 
 	if userError == nil {
 		userIDString := user.ID
@@ -122,8 +137,8 @@ func GetUserProfile(userName string) ([]string, []*class.Event) {
 			fmt.Printf("Get interests for %s - %s: %v\n", user.Username, userIDString, interests)
 		}
 
-		eventsList = GetEventsByUserID(userIDString)
-		if eventsList != nil {
+		eventsList, eventErr = class.GetEventsByUserID(userIDString)
+		if eventsList != nil && eventErr == nil {
 			// Print successful msg to console
 			fmt.Printf("Get events for %s - %s: %v\n", user.Username, userIDString, eventsList)
 		}
@@ -134,21 +149,14 @@ func GetUserProfile(userName string) ([]string, []*class.Event) {
 	return interests, eventsList
 }
 
-func GetEventsByUserID(userID string) []*class.Event {
-	var eventsList []*class.Event
-	joinedEvents := class.GetUserJoinedEvents(userID)
-	if joinedEvents != nil {
-		for _, joinedEvent := range joinedEvents {
-			event, eventError := class.GetEventByID(joinedEvent.EventID)
-			if eventError == nil {
-				eventsList = append(eventsList, event)
-			} else {
-				fmt.Printf("Get event error\n")
-			}
-		}
-	} else {
-		fmt.Printf("Get joined event error\n")
+func WrapProfileJson(interests []string, events []*class.Event) ([]byte, error) {
+	type Profile struct {
+		Interests []string
+		Events    []*class.Event
 	}
 
-	return eventsList
+	profile := Profile{interests, events}
+	js, err := json.Marshal(profile)
+
+	return js, err
 }

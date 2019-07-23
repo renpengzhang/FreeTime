@@ -24,7 +24,7 @@ func GetUserByName(userName string) (*User, error) {
 // GetUserByID is
 func GetUserByID(userID string) (*User, error) {
 	db := database.GetAzureMysqlDB()
-	dbUser, err := db.GetUserByID(userName)
+	dbUser, err := db.GetUserByID(userID)
 	if err != nil {
 		return nil, err
 	}
