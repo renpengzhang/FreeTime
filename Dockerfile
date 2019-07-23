@@ -12,6 +12,8 @@ RUN go install -v ./...
 
 RUN go build -o main .
 
-CMD ["./main"]
+RUN apk --no-cache add ca-certificates
+
+ENTRYPOINT ./main
 
 EXPOSE 8080

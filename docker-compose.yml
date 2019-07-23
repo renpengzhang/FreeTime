@@ -1,0 +1,8 @@
+version: '2.1'
+
+services:
+  fttest:
+    image: fttest
+    build: .
+    ports:
+      - 8080:8080
