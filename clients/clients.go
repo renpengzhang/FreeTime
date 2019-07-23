@@ -2,6 +2,7 @@ package clients
 
 import (
 	"FreeTime/operations"
+	"FreeTime/commons"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -22,11 +23,11 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var signupbody SignupBody
+	var signupbody commons.SignupBody
 	json.Unmarshal(bodyBytes, &signupbody)
 
-	userName := signupbody.username
-	interests := signupbody.interests
+	userName := signupbody.Username
+	interests := signupbody.Interests
 
 	if err := operations.SignUp(userName, interests); err != nil {
 		errMsg := fmt.Sprintf("%s failed to sign up", userName)
@@ -69,16 +70,16 @@ func CreateEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var creatEventBody CreatEventBody
+	var creatEventBody commons.CreatEventBody
 
 	json.Unmarshal(bodyBytes, &creatEventBody)
 
-	userName := creatEventBody.username
-	eventName := creatEventBody.name
-	startTime := creatEventBody.startTime
-	location := creatEventBody.location
-	interests := creatEventBody.interests
-	description := creatEventBody.description
+	userName := creatEventBody.Username
+	eventName := creatEventBody.Name
+	startTime := creatEventBody.StartTime
+	location := creatEventBody.Location
+	interests := creatEventBody.Interests
+	description := creatEventBody.Description
 
 	if err := operations.CreateEvent(userName, eventName, startTime, location, interests, description); err != nil {
 		errMsg := fmt.Sprintf("%s failed to create event", userName)
@@ -103,12 +104,12 @@ func JoinEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var joinEventBody JoinEventBody
+	var joinEventBody commons.JoinEventBody
 
 	json.Unmarshal(bodyBytes, &joinEventBody)
 
-	userName := joinEventBody.username
-	eventID := joinEventBody.eventid
+	userName := joinEventBody.Username
+	eventID := joinEventBody.Eventid
 
 	if err := operations.JoinEvent(userName, eventID); err != nil {
 		errMsg := fmt.Sprintf("%s failed to join event", userName)

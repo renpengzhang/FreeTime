@@ -3,6 +3,7 @@ package database
 import (
 	"errors"
 	"fmt"
+	"FreeTime/commons"
 )
 
 type DBUser struct {
@@ -39,7 +40,7 @@ func (azureMysqlDB AzureMysqlDB) GetUserByName(userName string) (*DBUser, error)
 		}
 	}
 	if user.ID == "" {
-		return nil, errors.New("User not exist")
+		return nil, errors.New(commons.UserNotExist)
 	}
 
 	return &user, nil
@@ -63,7 +64,7 @@ func (azureMysqlDB AzureMysqlDB) GetUserByID(userID string) (*DBUser, error) {
 		}
 	}
 	if user.ID == "" {
-		return nil, errors.New("User not exist")
+		return nil, errors.New(commons.UserNotExist)
 	}
 
 	return &user, nil
