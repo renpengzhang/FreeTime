@@ -48,8 +48,11 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 
 	if err := operations.SignIn(userName); err != nil {
 		errMsg := fmt.Sprintf("%s failed to sign in, please sign up first", userName)
-		http.Error(w, errMsg, http.StatusBadRequest)
-
+		if err.Error() == commons.UserNotExist {
+			http.Error(w, errMsg, http.StatusBadRequest)
+		} else {
+			http.Error(w, errMsg, http.StatusInternalServerError)
+		}
 	} else {
 		w.Write([]byte("Succeed to Sign In"))
 		w.WriteHeader(http.StatusOK)
@@ -83,7 +86,11 @@ func CreateEvent(w http.ResponseWriter, r *http.Request) {
 
 	if err := operations.CreateEvent(userName, eventName, startTime, location, interests, description); err != nil {
 		errMsg := fmt.Sprintf("%s failed to create event", userName)
-		http.Error(w, errMsg, http.StatusInternalServerError)
+		if err.Error() == commons.UserNotExist {
+			http.Error(w, errMsg, http.StatusBadRequest)
+		} else {
+			http.Error(w, errMsg, http.StatusInternalServerError)
+		}
 	} else {
 		w.Write([]byte("Succeed to Create Event"))
 		w.WriteHeader(http.StatusOK)
@@ -113,7 +120,11 @@ func JoinEvent(w http.ResponseWriter, r *http.Request) {
 
 	if err := operations.JoinEvent(userName, eventID); err != nil {
 		errMsg := fmt.Sprintf("%s failed to join event", userName)
-		http.Error(w, errMsg, http.StatusInternalServerError)
+		if err.Error() == commons.UserNotExist {
+			http.Error(w, errMsg, http.StatusBadRequest)
+		} else {
+			http.Error(w, errMsg, http.StatusInternalServerError)
+		}
 	} else {
 		w.Write([]byte("Succeed to Join Event"))
 		w.WriteHeader(http.StatusOK)
@@ -131,7 +142,11 @@ func GetEvents(w http.ResponseWriter, r *http.Request) {
 	eventsList, err := operations.GetEvents(userName)
 	if err != nil {
 		errMsg := fmt.Sprintf("Failed to get events for %s", userName)
-		http.Error(w, errMsg, http.StatusInternalServerError)
+		if err.Error() == commons.UserNotExist {
+			http.Error(w, errMsg, http.StatusBadRequest)
+		} else {
+			http.Error(w, errMsg, http.StatusInternalServerError)
+		}
 	} else {
 		js, err := json.Marshal(eventsList)
 		if err != nil {
@@ -154,7 +169,12 @@ func GetUserProfile(w http.ResponseWriter, r *http.Request) {
 
 	interests, eventsList, err := operations.GetUserProfile(userName)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		errMsg := fmt.Sprintf("Failed to get profile for %s", userName)
+		if err.Error() == commons.UserNotExist {
+			http.Error(w, errMsg, http.StatusBadRequest)
+		} else {
+			http.Error(w, errMsg, http.StatusInternalServerError)
+		}
 		return
 	} else {
 		js, err := operations.WrapProfileJson(interests, eventsList)

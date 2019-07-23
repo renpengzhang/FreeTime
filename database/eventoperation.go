@@ -80,7 +80,7 @@ func (azureMysqlDB AzureMysqlDB) GetEventByName(eventName string) (*DBEvent, err
 func (azureMysqlDB AzureMysqlDB) SetEvent(event DBEvent) error {
 	starttime := event.StartTime.Format("2006-01-02 15:04:05")
 
-	queryString := fmt.Sprintf("INSERT into event (eventid, name, ownerid, starttime, location, participantCount) values ('%s', '%s', '%s', '%s', '%s', %d) ON DUPLICATE KEY UPDATE participantCount = %d;", event.EventID, event.Name, event.OwnerID, starttime, event.Location, event.ParticipantCount, event.ParticipantCount)
+	queryString := fmt.Sprintf("INSERT into event (eventid, name, ownerid, starttime, location, participantCount, description) values ('%s', '%s', '%s', '%s', '%s', %d, '%s') ON DUPLICATE KEY UPDATE participantCount = %d;", event.EventID, event.Name, event.OwnerID, starttime, event.Location, event.ParticipantCount, event.Description,event.ParticipantCount)
 
 	rows, err := azureMysqlDB.execQuery(queryString)
 	if err != nil {
