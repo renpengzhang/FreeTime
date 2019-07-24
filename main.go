@@ -44,5 +44,5 @@ func main() {
 
 	http.HandleFunc("/getuserprofile", clients.GetUserProfile)
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServeTLS(":443", "cert.pem", "key.pem", nil))
 }
