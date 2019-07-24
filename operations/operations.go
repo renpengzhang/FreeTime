@@ -66,7 +66,7 @@ func CreateEvent(userName string, eventName string, startTime string, location s
 
 	if userError == nil {
 		ownerID := owner.ID
-		eventTime, timeError := time.Parse("2006-01-02 15:04:05", startTime)
+		eventTime, timeError := time.Parse("2006-1-2 15:04:05", startTime)
 		eventErr := class.SetEvent(class.Event{eventIDString, eventName, ownerID, eventTime, location, 1, description})
 		if timeError == nil && eventErr == nil {
 			// Print successful msg to console
