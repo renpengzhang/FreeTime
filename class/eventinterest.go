@@ -9,16 +9,19 @@ type EventInterest struct {
 }
 
 // GetInterestsByEventID is
-func GetInterestsByEventID(eventID string) []EventInterest {
+func GetInterestsByEventID(eventID string) ([]EventInterest, error) {
 	db := database.GetAzureMysqlDB()
 
 	var eventInterestList []EventInterest
 
-	dbEventInterestList, _ := db.GetInterestsByEventID(eventID)
+	dbEventInterestList, err := db.GetInterestsByEventID(eventID)
+	if err != nil {
+		return nil, err
+	}
 	for _, dbEventInterest := range dbEventInterestList {
 		eventInterestList = append(eventInterestList, EventInterest{dbEventInterest.EventID, dbEventInterest.Interest})
 	}
-	return eventInterestList
+	return eventInterestList, nil
 }
 
 // AddEventInterest is

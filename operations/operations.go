@@ -17,6 +17,11 @@ type Profile struct {
 	Events    []*class.Event
 }
 
+type EventInterests struct {
+	Event		*class.Event
+	Interests	[]string
+}
+
 // SignUp is
 func SignUp(userName string, interests string) error {
 	userID := uuid.New()
@@ -177,8 +182,28 @@ func GetJoinedEvents(userName string) ([]*class.Event, error) {
 	return eventsList, nil
 }
 
-func GetAllEvents() ([]*class.Event, error) {
-	return class.GetAllEvents()
+func GetAllEvents() ([]*EventInterests, error) {
+	events, eventsErr := class.GetAllEvents()
+	if (eventsErr != nil) {
+		fmt.Println("Get all events failed")
+		fmt.Println(eventsErr)
+		return nil, eventsErr
+	}
+
+	var eventsInterests []*EventInterests
+	for _, event := range events {
+		interestsEvent, interestsErr := class.GetInterestsByEventID(event.EventID)
+		if interestsErr != nil {
+			return nil, interestsErr
+		}
+		var interests []string
+		for _, interest := range interestsEvent {
+			interests = append(interests, interest.Interest)
+		}
+		eventInterest := EventInterests{event, interests}
+		eventsInterests = append(eventsInterests, &eventInterest)
+	}
+	return eventsInterests, nil
 }
 
 // GetCreatedEvents is
