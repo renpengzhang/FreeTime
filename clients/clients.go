@@ -9,8 +9,13 @@ import (
 	"net/http"
 )
 
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+}
+
 // SignUp is
 func SignUp(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	if r.Method != "POST" {
 		http.Error(w, "Method not allowed", 405)
 		return
@@ -44,6 +49,7 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 
 // SignIn is
 func SignIn(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	if r.Method != "GET" {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -65,6 +71,7 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 
 // CreateEvent is
 func CreateEvent(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	if r.Method != "POST" {
 		http.Error(w, "Method not allowed", 405)
 		return
@@ -103,6 +110,7 @@ func CreateEvent(w http.ResponseWriter, r *http.Request) {
 
 // JoinEvent is
 func JoinEvent(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	if r.Method != "POST" {
 		http.Error(w, "Method not allowed", 405)
 		return
@@ -137,6 +145,7 @@ func JoinEvent(w http.ResponseWriter, r *http.Request) {
 
 // GetJoinedEvents is
 func GetJoinedEvents(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	if r.Method != "GET" {
 		http.Error(w, "Method not allowed", 405)
 		return
@@ -165,6 +174,7 @@ func GetJoinedEvents(w http.ResponseWriter, r *http.Request) {
 
 // GetAllEvents is
 func GetAllEvents(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	if r.Method != "GET" {
 		http.Error(w, "Method not allowed", 405)
 		return
@@ -188,6 +198,7 @@ func GetAllEvents(w http.ResponseWriter, r *http.Request) {
 
 // GetUserProfile is
 func GetUserProfile(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	if r.Method != "GET" {
 		http.Error(w, "Method not allowed", 405)
 		return
