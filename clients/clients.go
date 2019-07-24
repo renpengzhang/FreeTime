@@ -31,7 +31,11 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 
 	if err := operations.SignUp(userName, interests); err != nil {
 		errMsg := fmt.Sprintf("%s failed to sign up", userName)
-		http.Error(w, errMsg, http.StatusInternalServerError)
+		if err.Error() == commons.DuplicatedUser {
+			http.Error(w, errMsg, http.StatusBadRequest)
+		} else {
+			http.Error(w, errMsg, http.StatusInternalServerError)
+		}
 	} else {
 		w.Write([]byte("Succeed to Sign Up"))
 		w.WriteHeader(http.StatusOK)
@@ -120,7 +124,7 @@ func JoinEvent(w http.ResponseWriter, r *http.Request) {
 
 	if err := operations.JoinEvent(userName, eventID); err != nil {
 		errMsg := fmt.Sprintf("%s failed to join event", userName)
-		if err.Error() == commons.UserNotExist {
+		if err.Error() == commons.UserNotExist || err.Error() == commons.AlreadyJoinedEvent {
 			http.Error(w, errMsg, http.StatusBadRequest)
 		} else {
 			http.Error(w, errMsg, http.StatusInternalServerError)

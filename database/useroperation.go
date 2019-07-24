@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"FreeTime/commons"
+	"strings"
 )
 
 type DBUser struct {
@@ -76,7 +77,11 @@ func (azureMysqlDB AzureMysqlDB) SetUser(userName, userID string) error {
 
 	rows, err := azureMysqlDB.execQuery(queryString)
 	if err != nil {
-		return err
+		if strings.Contains(err.Error(), "1062") && strings.Contains(strings.ToLower(err.Error()), "duplicate") {
+			return errors.New(commons.DuplicatedUser)
+		} else {
+			return err
+		}
 	}
 	rows.Close()
 
@@ -191,7 +196,11 @@ func (azureMysqlDB AzureMysqlDB) AddUserJoinedEvent(userJoinedEvent DBUserJoined
 
 	rows, err := azureMysqlDB.execQuery(queryString)
 	if err != nil {
-		return err
+		if strings.Contains(err.Error(), "1062") && strings.Contains(strings.ToLower(err.Error()), "duplicate") {
+			return errors.New(commons.AlreadyJoinedEvent)
+		} else {
+			return err
+		}
 	}
 	rows.Close()
 
