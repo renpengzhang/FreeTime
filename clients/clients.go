@@ -5,7 +5,6 @@ import (
 	"FreeTime/operations"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 )
 
@@ -16,23 +15,14 @@ func enableCors(w *http.ResponseWriter) {
 // SignUp is
 func SignUp(w http.ResponseWriter, r *http.Request) {
 	enableCors(&w)
-	if r.Method != "POST" {
+	if r.Method != "POST" && r.Method != "GET"{
 		http.Error(w, "Method not allowed", 405)
 		return
 	}
 
-	bodyBytes, err := ioutil.ReadAll(r.Body)
-	defer r.Body.Close()
-	if err != nil {
-		http.Error(w, err.Error(), 400)
-		return
-	}
-
-	var signupbody commons.SignupBody
-	json.Unmarshal(bodyBytes, &signupbody)
-
-	userName := signupbody.Username
-	interests := signupbody.Interests
+	parameters := r.URL.Query()
+	userName := parameters.Get("username")
+	interests := parameters.Get("interests")
 
 	if err := operations.SignUp(userName, interests); err != nil {
 		errMsg := fmt.Sprintf("%s failed to sign up", userName)
@@ -72,28 +62,18 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 // CreateEvent is
 func CreateEvent(w http.ResponseWriter, r *http.Request) {
 	enableCors(&w)
-	if r.Method != "POST" {
+	if r.Method != "POST" && r.Method != "GET"{
 		http.Error(w, "Method not allowed", 405)
 		return
 	}
 
-	bodyBytes, err := ioutil.ReadAll(r.Body)
-	defer r.Body.Close()
-	if err != nil {
-		http.Error(w, err.Error(), 400)
-		return
-	}
-
-	var creatEventBody commons.CreatEventBody
-
-	json.Unmarshal(bodyBytes, &creatEventBody)
-
-	userName := creatEventBody.Username
-	eventName := creatEventBody.Name
-	startTime := creatEventBody.StartTime
-	location := creatEventBody.Location
-	interests := creatEventBody.Interests
-	description := creatEventBody.Description
+	parameters := r.URL.Query()
+	userName := parameters.Get("username")
+	eventName := parameters.Get("name")
+	startTime := parameters.Get("startTime")
+	location := parameters.Get("location")
+	interests := parameters.Get("interests")
+	description := parameters.Get("description")
 
 	if err := operations.CreateEvent(userName, eventName, startTime, location, interests, description); err != nil {
 		errMsg := fmt.Sprintf("%s failed to create event", userName)
@@ -111,24 +91,14 @@ func CreateEvent(w http.ResponseWriter, r *http.Request) {
 // JoinEvent is
 func JoinEvent(w http.ResponseWriter, r *http.Request) {
 	enableCors(&w)
-	if r.Method != "POST" {
+	if r.Method != "POST" && r.Method != "GET"{
 		http.Error(w, "Method not allowed", 405)
 		return
 	}
 
-	bodyBytes, err := ioutil.ReadAll(r.Body)
-	defer r.Body.Close()
-	if err != nil {
-		http.Error(w, err.Error(), 400)
-		return
-	}
-
-	var joinEventBody commons.JoinEventBody
-
-	json.Unmarshal(bodyBytes, &joinEventBody)
-
-	userName := joinEventBody.Username
-	eventID := joinEventBody.Eventid
+	parameters := r.URL.Query()
+	userName := parameters.Get("username")
+	eventID := parameters.Get("eventId")
 
 	if err := operations.JoinEvent(userName, eventID); err != nil {
 		errMsg := fmt.Sprintf("%s failed to join event", userName)
