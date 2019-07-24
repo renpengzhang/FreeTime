@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -11,23 +10,14 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		//username := r.URL.Query().Get("username")
-		//fmt.Fprintf(w, "Hello, %s", username)
-		if r.Method != "POST" {
-			http.Error(w, "Method not allowed", 405)
-			return
-		}
+	http.HandleFunc("/profileimages/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println(r.URL.Path)
+		http.ServeFile(w, r, r.URL.Path[1:])
+	})
 
-		bodyBytes, err := ioutil.ReadAll(r.Body)
-		defer r.Body.Close()
-		if err != nil {
-			http.Error(w, err.Error(), 400)
-			return
-		}
-
-		body := string(bodyBytes)
-		fmt.Fprintf(w, "The body is: %s", body)
+	http.HandleFunc("/eventimages/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println(r.URL.Path)
+		http.ServeFile(w, r, r.URL.Path[1:])
 	})
 
 	http.HandleFunc("/signup", clients.SignUp)

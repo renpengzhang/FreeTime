@@ -5,8 +5,12 @@ import (
 	"FreeTime/operations"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
+	"os"
+
+	"github.com/google/uuid"
 )
 
 func enableCors(w *http.ResponseWriter) {
@@ -21,20 +25,32 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bodyBytes, err := ioutil.ReadAll(r.Body)
-	defer r.Body.Close()
-	if err != nil {
-		http.Error(w, err.Error(), 400)
-		return
+	if err := r.ParseMultipartForm(32 << 20); err != nil {
+		fmt.Println(err.Error())
 	}
 
-	var signupbody commons.SignupBody
-	json.Unmarshal(bodyBytes, &signupbody)
+	userName := r.FormValue("username")
+	interests := r.FormValue("interests")
 
-	userName := signupbody.Username
-	interests := signupbody.Interests
+	userID := uuid.New()
+	userIDString := userID.String()
 
-	if err := operations.SignUp(userName, interests); err != nil {
+	file, handler, err := r.FormFile("profileimage")
+	_ = handler
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer file.Close()
+	f, err := os.OpenFile("./profileimages/"+userIDString+".jpg", os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer f.Close()
+	io.Copy(f, file)
+
+	if err := operations.SignUp(userName, interests, userIDString); err != nil {
 		errMsg := fmt.Sprintf("%s failed to sign up", userName)
 		if err.Error() == commons.DuplicatedUser {
 			http.Error(w, errMsg, http.StatusBadRequest)
@@ -77,25 +93,36 @@ func CreateEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bodyBytes, err := ioutil.ReadAll(r.Body)
-	defer r.Body.Close()
-	if err != nil {
-		http.Error(w, err.Error(), 400)
-		return
+	if err := r.ParseMultipartForm(32 << 20); err != nil {
+		fmt.Println(err.Error())
 	}
 
-	var creatEventBody commons.CreatEventBody
+	userName := r.FormValue("username")
+	eventName := r.FormValue("name")
+	startTime := r.FormValue("starttime")
+	location := r.FormValue("location")
+	interests := r.FormValue("interests")
+	description := r.FormValue("description")
 
-	json.Unmarshal(bodyBytes, &creatEventBody)
+	eventID := uuid.New()
+	eventIDString := eventID.String()
 
-	userName := creatEventBody.Username
-	eventName := creatEventBody.Name
-	startTime := creatEventBody.StartTime
-	location := creatEventBody.Location
-	interests := creatEventBody.Interests
-	description := creatEventBody.Description
+	file, handler, err := r.FormFile("eventimage")
+	_ = handler
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer file.Close()
+	f, err := os.OpenFile("./eventimages/"+eventIDString+".jpg", os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer f.Close()
+	io.Copy(f, file)
 
-	if err := operations.CreateEvent(userName, eventName, startTime, location, interests, description); err != nil {
+	if err := operations.CreateEvent(userName, eventName, startTime, location, interests, description, eventIDString); err != nil {
 		errMsg := fmt.Sprintf("%s failed to create event", userName)
 		if err.Error() == commons.UserNotExist {
 			http.Error(w, errMsg, http.StatusBadRequest)
