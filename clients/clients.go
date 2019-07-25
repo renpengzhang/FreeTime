@@ -231,7 +231,7 @@ func GetUserProfile(w http.ResponseWriter, r *http.Request) {
 	}
 	userName := r.URL.Query().Get("username")
 
-	interests, eventsList, err := operations.GetUserProfile(userName)
+	interests, eventsList, userID, err := operations.GetUserProfile(userName)
 	if err != nil {
 		errMsg := fmt.Sprintf("Failed to get profile for %s", userName)
 		if err.Error() == commons.UserNotExist {
@@ -241,7 +241,7 @@ func GetUserProfile(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	} else {
-		js, err := operations.WrapProfileJson(interests, eventsList)
+		js, err := operations.WrapProfileJson(interests, eventsList, userID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

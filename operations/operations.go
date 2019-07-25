@@ -13,6 +13,7 @@ import (
 type Profile struct {
 	Interests []string
 	Events    []*class.Event
+	UserID    string
 }
 
 type EventInterests struct {
@@ -231,7 +232,7 @@ func GetCreatedEvents(userName string) ([]*class.Event, error) {
 }
 
 // GetUserProfile is
-func GetUserProfile(userName string) ([]string, []*class.Event, error) {
+func GetUserProfile(userName string) ([]string, []*class.Event, string, error) {
 	user, userError := class.GetUserByName(userName)
 	var interests []string
 	var createdEvents []*class.Event
@@ -252,7 +253,7 @@ func GetUserProfile(userName string) ([]string, []*class.Event, error) {
 		var err error
 		createdEvents, err = class.GetCreatedEventsByUserID(userIDString)
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, "", err
 		}
 
 		if createdEvents != nil {
@@ -264,14 +265,14 @@ func GetUserProfile(userName string) ([]string, []*class.Event, error) {
 	} else {
 		fmt.Printf("Get user %s failed\n", userName)
 		fmt.Println(userError)
-		return nil, nil, userError
+		return nil, nil, "", userError
 	}
 
-	return interests, createdEvents, nil
+	return interests, createdEvents, user.ID, nil
 }
 
-func WrapProfileJson(interests []string, events []*class.Event) ([]byte, error) {
-	profile := Profile{interests, events}
+func WrapProfileJson(interests []string, events []*class.Event, userID string) ([]byte, error) {
+	profile := Profile{interests, events, userID}
 	js, err := json.Marshal(profile)
 
 	return js, err
