@@ -34,21 +34,6 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 	userID := uuid.New()
 	userIDString := userID.String()
 
-	file, handler, err := r.FormFile("profileimage")
-	_ = handler
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer file.Close()
-	f, err := os.OpenFile("./profileimages/"+userIDString+".jpg", os.O_WRONLY|os.O_CREATE, 0666)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer f.Close()
-	io.Copy(f, file)
-
 	if err := operations.SignUp(userName, interests, userIDString); err != nil {
 		errMsg := fmt.Sprintf("%s failed to sign up", userName)
 		if err.Error() == commons.DuplicatedUser {
@@ -56,10 +41,30 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 		} else {
 			http.Error(w, errMsg, http.StatusInternalServerError)
 		}
-	} else {
-		w.Write([]byte("Succeed to Sign Up"))
-		w.WriteHeader(http.StatusOK)
+		return
 	}
+
+	file, _, err := r.FormFile("profileimage")
+	if err != nil {
+		fmt.Printf("No profile image detected: %v\n", err)
+		file, err = os.Open("./profileimages/default.jpg")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+	}
+	defer file.Close()
+
+	f, err := os.Create("./profileimages/" + userIDString + ".jpg")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer f.Close()
+	io.Copy(f, file)
+
+	w.Write([]byte("Succeed to Sign Up"))
+	w.WriteHeader(http.StatusOK)
 }
 
 // SignIn is
@@ -106,21 +111,6 @@ func CreateEvent(w http.ResponseWriter, r *http.Request) {
 	eventID := uuid.New()
 	eventIDString := eventID.String()
 
-	file, handler, err := r.FormFile("eventimage")
-	_ = handler
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer file.Close()
-	f, err := os.OpenFile("./eventimages/"+eventIDString+".jpg", os.O_WRONLY|os.O_CREATE, 0666)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer f.Close()
-	io.Copy(f, file)
-
 	if err := operations.CreateEvent(userName, eventName, startTime, location, interests, description, eventIDString); err != nil {
 		errMsg := fmt.Sprintf("%s failed to create event", userName)
 		if err.Error() == commons.UserNotExist {
@@ -128,10 +118,30 @@ func CreateEvent(w http.ResponseWriter, r *http.Request) {
 		} else {
 			http.Error(w, errMsg, http.StatusInternalServerError)
 		}
-	} else {
-		w.Write([]byte("Succeed to Create Event"))
-		w.WriteHeader(http.StatusOK)
+		return
 	}
+
+	file, _, err := r.FormFile("eventimage")
+	if err != nil {
+		fmt.Printf("No event image detected: %v\n", err)
+		file, err = os.Open("./eventimages/default.jpg")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+	}
+	defer file.Close()
+
+	f, err := os.Create("./eventimages/" + eventIDString + ".jpg")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer f.Close()
+	io.Copy(f, file)
+
+	w.Write([]byte("Succeed to Create Event"))
+	w.WriteHeader(http.StatusOK)
 }
 
 // JoinEvent is
