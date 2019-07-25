@@ -7,8 +7,6 @@ import (
 
 	"encoding/json"
 	"strings"
-
-	"github.com/google/uuid"
 )
 
 // Used for wrap json
@@ -18,14 +16,12 @@ type Profile struct {
 }
 
 type EventInterests struct {
-	Event		*class.Event
-	Interests	[]string
+	Event     *class.Event
+	Interests []string
 }
 
 // SignUp is
-func SignUp(userName string, interests string) error {
-	userID := uuid.New()
-	userIDString := userID.String()
+func SignUp(userName string, interests string, userIDString string) error {
 	if err := class.SetUser(userName, userIDString); err != nil {
 		fmt.Printf("Set User failed\n")
 		fmt.Println(err)
@@ -65,14 +61,12 @@ func SignIn(userName string) error {
 }
 
 // CreateEvent is
-func CreateEvent(userName string, eventName string, startTime string, location string, interests string, description string) error {
-	eventID := uuid.New()
-	eventIDString := eventID.String()
+func CreateEvent(userName string, eventName string, startTime string, location string, interests string, description string, eventIDString string) error {
 	owner, userError := class.GetUserByName(userName)
 
 	if userError == nil {
 		ownerID := owner.ID
-		eventTime, timeError := time.Parse("2006-01-02 15:04:05", startTime)
+		eventTime, timeError := time.Parse("2006-1-2 15:04:05", startTime)
 		eventErr := class.SetEvent(class.Event{eventIDString, eventName, ownerID, eventTime, location, 1, description})
 		if timeError == nil && eventErr == nil {
 			// Print successful msg to console
@@ -184,7 +178,7 @@ func GetJoinedEvents(userName string) ([]*class.Event, error) {
 
 func GetAllEvents() ([]*EventInterests, error) {
 	events, eventsErr := class.GetAllEvents()
-	if (eventsErr != nil) {
+	if eventsErr != nil {
 		fmt.Println("Get all events failed")
 		fmt.Println(eventsErr)
 		return nil, eventsErr

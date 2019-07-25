@@ -5,7 +5,11 @@ import (
 	"FreeTime/operations"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
+
+	"github.com/google/uuid"
 )
 
 func enableCors(w *http.ResponseWriter) {
@@ -15,16 +19,37 @@ func enableCors(w *http.ResponseWriter) {
 // SignUp is
 func SignUp(w http.ResponseWriter, r *http.Request) {
 	enableCors(&w)
-	if r.Method != "POST" && r.Method != "GET"{
+	if r.Method != "POST" {
 		http.Error(w, "Method not allowed", 405)
 		return
 	}
 
-	parameters := r.URL.Query()
-	userName := parameters.Get("username")
-	interests := parameters.Get("interests")
+	if err := r.ParseMultipartForm(32 << 20); err != nil {
+		fmt.Println(err.Error())
+	}
 
-	if err := operations.SignUp(userName, interests); err != nil {
+	userName := r.FormValue("username")
+	interests := r.FormValue("interests")
+
+	userID := uuid.New()
+	userIDString := userID.String()
+
+	file, handler, err := r.FormFile("profileimage")
+	_ = handler
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer file.Close()
+	f, err := os.OpenFile("./profileimages/"+userIDString+".jpg", os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer f.Close()
+	io.Copy(f, file)
+
+	if err := operations.SignUp(userName, interests, userIDString); err != nil {
 		errMsg := fmt.Sprintf("%s failed to sign up", userName)
 		if err.Error() == commons.DuplicatedUser {
 			http.Error(w, errMsg, http.StatusBadRequest)
@@ -62,20 +87,41 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 // CreateEvent is
 func CreateEvent(w http.ResponseWriter, r *http.Request) {
 	enableCors(&w)
-	if r.Method != "POST" && r.Method != "GET"{
+	if r.Method != "POST" {
 		http.Error(w, "Method not allowed", 405)
 		return
 	}
 
-	parameters := r.URL.Query()
-	userName := parameters.Get("username")
-	eventName := parameters.Get("name")
-	startTime := parameters.Get("startTime")
-	location := parameters.Get("location")
-	interests := parameters.Get("interests")
-	description := parameters.Get("description")
+	if err := r.ParseMultipartForm(32 << 20); err != nil {
+		fmt.Println(err.Error())
+	}
 
-	if err := operations.CreateEvent(userName, eventName, startTime, location, interests, description); err != nil {
+	userName := r.FormValue("username")
+	eventName := r.FormValue("name")
+	startTime := r.FormValue("starttime")
+	location := r.FormValue("location")
+	interests := r.FormValue("interests")
+	description := r.FormValue("description")
+
+	eventID := uuid.New()
+	eventIDString := eventID.String()
+
+	file, handler, err := r.FormFile("eventimage")
+	_ = handler
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer file.Close()
+	f, err := os.OpenFile("./eventimages/"+eventIDString+".jpg", os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer f.Close()
+	io.Copy(f, file)
+
+	if err := operations.CreateEvent(userName, eventName, startTime, location, interests, description, eventIDString); err != nil {
 		errMsg := fmt.Sprintf("%s failed to create event", userName)
 		if err.Error() == commons.UserNotExist {
 			http.Error(w, errMsg, http.StatusBadRequest)
@@ -91,7 +137,7 @@ func CreateEvent(w http.ResponseWriter, r *http.Request) {
 // JoinEvent is
 func JoinEvent(w http.ResponseWriter, r *http.Request) {
 	enableCors(&w)
-	if r.Method != "POST" && r.Method != "GET"{
+	if r.Method != "POST" {
 		http.Error(w, "Method not allowed", 405)
 		return
 	}
