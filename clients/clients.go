@@ -154,7 +154,7 @@ func JoinEvent(w http.ResponseWriter, r *http.Request) {
 
 	parameters := r.URL.Query()
 	userName := parameters.Get("username")
-	eventID := parameters.Get("eventId")
+	eventID := parameters.Get("eventid")
 
 	if err := operations.JoinEvent(userName, eventID); err != nil {
 		errMsg := fmt.Sprintf("%s failed to join event", userName)
